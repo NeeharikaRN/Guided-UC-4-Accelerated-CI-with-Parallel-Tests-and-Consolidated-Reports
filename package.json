@@ -1,0 +1,21 @@
+{
+  "name": "guided-uc---4-accelerated-ci-with-parallel-tests-and-consolidated-reports",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test:unit": "jest --coverage --testPathPattern=unit",
+    "test:integration": "jest --coverage --testPathPattern=integration",
+    "test:e2e": "jest --coverage --testPathPattern=e2e"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "coverageDirectory": "coverage"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "jest": "^30.2.0"
+  }
+}

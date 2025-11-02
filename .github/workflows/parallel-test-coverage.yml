@@ -1,0 +1,71 @@
+name: Parallel Testing and Coverage Aggregation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  # ------------------ PARALLEL TEST JOBS ------------------
+  test:
+    name: Run Tests - ${{ matrix.group }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        group: [unit, integration, e2e]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run ${{ matrix.group }} Tests
+        run: |
+          echo "Running test group: ${{ matrix.group }}"
+          npm run test:${{ matrix.group }}
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.group }}
+          path: coverage/
+
+  # ------------------ AGGREGATION JOB ------------------
+  aggregate:
+    name: Combine Coverage Reports
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Download All Coverage Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: coverage-artifacts
+
+      - name: Merge Coverage Reports
+        run: |
+          npm install -g lcov-result-merger
+          mkdir -p coverage
+          lcov-result-merger "coverage-artifacts/**/lcov.info" "coverage/merged.lcov"
+
+      - name: Generate HTML Coverage Report
+        run: |
+          sudo apt-get update && sudo apt-get install -y lcov
+          genhtml coverage/merged.lcov --output-directory coverage/html
+          echo "✅ Combined coverage report generated at coverage/html/index.html"
+
+      - name: Upload Combined HTML Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: combined-html-coverage
+          path: coverage/html/
