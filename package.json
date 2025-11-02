@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test:unit": "jest --coverage --testPathPattern=unit",
-    "test:integration": "jest --coverage --testPathPattern=integration",
-    "test:e2e": "jest --coverage --testPathPattern=e2e"
+    "test:unit": "jest --coverage --testPathPatterns=unit",
+    "test:integration": "jest --coverage --testPathPatterns=integration",
+    "test:e2e": "jest --coverage --testPathPatterns=e2e"
   },
   "jest": {
     "collectCoverage": true,
